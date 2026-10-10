@@ -1,0 +1,20 @@
+# never commit data, results or manuscripts
+cache/
+results/
+figures/
+manuscript*/
+data/
+data_prep_cache/
+*.pkl
+*.csv
+*.tsv
+*.gz
+*.tar
+*.xlsx
+*.docx
+*.pdf
+*.png
+*.tiff
+*.svg
+__pycache__/
+.DS_Store
