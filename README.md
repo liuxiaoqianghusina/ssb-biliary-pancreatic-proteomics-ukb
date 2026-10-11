@@ -35,6 +35,7 @@ Directories are set with environment variables (defaults in brackets):
 - `UKB_DATA_DIR` – UK Biobank dataset CSV extracts and data dictionary (`../ukb_data`)
 - `UKB_EXTRACT_DIR` – cached raw extracts of 24-h recall nutrients and items and of health outcomes (`../ukb_extracts`)
 - `DIET_PROJECT_DIR` – companion diet–proteome project (`../diet-proteome`)
+- `MS_DIR`, `SI_TITLE`, `MAIN_TABLES` – output folder and title for `S08_tables.py`; `MAIN_TABLES=2` leaves the signature table out of the main text, as in the submitted version (`3`)
 
 Inputs from the companion diet–proteome project (to be released with that paper): the person-level covariate table (`cache/person.pkl`), the quality-controlled, plate-adjusted and standardized Olink matrix (`cache/olink_qc_plateadj.pkl`), the 70/30 signature training split and BMI proteomic signature (`cache/signatures.pkl`), gallstone-related covariates (`cache/extra_tier1.pkl`), and FinnGen R12 / UKB-PPP files under `data/mr/`.
 

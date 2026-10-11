@@ -137,7 +137,17 @@ for o in SPECTRUM + ["MASLD", "Cirrhosis"]:
 t3 = pd.DataFrame(rows)
 
 # ---------------------------------------------------------------- write main tables (Markdown)
+# MAIN_TABLES=2 (Clinical Nutrition version) leaves Table 3 out of the main text; its estimates are in
+# Supplementary Table 13 (Model 2), Fig. 5a and Supplementary Data (mutually adjusted).
 n_int, n_sig = len(A), len(B)
+TABLE3 = (f"""\\pagebreak
+
+**Table 3. Proteomic signatures of sugar-sweetened and artificially sweetened beverages and risk of biliary and pancreatic diseases in the independent sample**
+
+{md_table(t3)}
+
+Values are HR (95% CI) per SD of the signature. Model 2 was adjusted for age, sex, ethnicity, Townsend deprivation index, education, smoking, alcohol frequency, physical activity, BMI, diabetes, fasting time and assessment centre (Model 1), plus triglycerides, HbA1c, CRP, GGT, cystatin C and creatinine. Mutually adjusted estimates come from Model 2 including both signatures. MASLD and cirrhosis, the outcomes studied by Zhao et al., are shown for comparison. Abbreviations: {ABBR}
+""" if int(os.environ.get("MAIN_TABLES", "3")) >= 3 else "")
 md = f"""# 表格
 
 **Table 1. Baseline characteristics of participants by intake of sugar-sweetened and artificially sweetened beverages**
@@ -154,14 +164,7 @@ Values are mean (SD), median (IQR) or n (%). The 24-h recall cohort comprises {n
 
 Values are HR (95% CI) from Cox models with SSB and ASB in the same model (Model 2): adjusted for age, sex, ethnicity, Townsend deprivation index, education, smoking, alcohol frequency, recalled alcohol intake, physical activity, BMI, diabetes, energy intake, number of recalls and assessment centre. P for trend was obtained by assigning the median intake to each category. Gallstone-related acute pancreatitis was defined as a gallstone record before or within 90 days after the pancreatitis diagnosis, or ICD-10 K85.1. Abbreviations: {ABBR}
 
-\\pagebreak
-
-**Table 3. Proteomic signatures of sugar-sweetened and artificially sweetened beverages and risk of biliary and pancreatic diseases in the independent sample**
-
-{md_table(t3)}
-
-Values are HR (95% CI) per SD of the signature. Model 2 was adjusted for age, sex, ethnicity, Townsend deprivation index, education, smoking, alcohol frequency, physical activity, BMI, diabetes, fasting time and assessment centre (Model 1), plus triglycerides, HbA1c, CRP, GGT, cystatin C and creatinine. Mutually adjusted estimates come from Model 2 including both signatures. MASLD and cirrhosis, the outcomes studied by Zhao et al., are shown for comparison. Abbreviations: {ABBR}
-"""
+{TABLE3}"""
 open(SRC / "表格.md", "w", encoding="utf-8").write(md)
 
 # ---------------------------------------------------------------- supplementary tables
