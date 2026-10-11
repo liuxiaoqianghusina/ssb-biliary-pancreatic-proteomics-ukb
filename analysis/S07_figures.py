@@ -1,8 +1,12 @@
 """Main and supplementary figures (Arial throughout, italic P, SVG/PDF/PNG/TIFF at 600 dpi).
-Fig 1 study design; Fig 2 intake -> outcomes (forest + splines); Fig 3 beverage-proteome (volcano + enrichment);
-Fig 4 signatures -> outcomes (M1-M3); Fig 5 pathway split (mutually adjusted signatures + individual proteins).
-Fig S1 substitution; Fig S2 subgroups; Fig S3 signature tertiles; Fig S4 biomarkers.
+Fig 1 study design; Fig 2 intake -> outcomes (forest + splines); Fig 3 signatures -> outcomes (M1-M3);
+Fig 4 pathway split (mutually adjusted signatures + individual proteins); Fig 5 abdominal MRI.
+Fig S1 subgroups; Fig S2 substitution; Fig S3 biomarkers; Fig S4 beverage-proteome (volcano + enrichment);
+Fig S5 signature tertiles.
 """
+import os
+from pathlib import Path
+
 import matplotlib
 
 matplotlib.use("Agg")
@@ -28,13 +32,30 @@ SHORT = {**OUT_LABEL, "AP_biliary": "Gallstone-related AP", "AP_nonbiliary": "No
          "NC_carpal_tunnel": "Upper-limb mononeuropathy"}
 
 
+# FRONTIERS=1 writes Frontiers-style main figures (bold "(A)" panel labels, width <=180 mm) to FIG_DIR
+FRONTIERS = os.environ.get("FRONTIERS") == "1"
+OUT = Path(os.environ["FIG_DIR"]) if os.environ.get("FIG_DIR") else FIG
+OUT.mkdir(parents=True, exist_ok=True)
+
+
 def save(fig, name):
+    if FRONTIERS:                              # final (tight) width must not exceed 180 mm
+        for _ in range(6):
+            fig.canvas.draw()
+            tw = fig.get_tightbbox(fig.canvas.get_renderer()).width
+            if tw <= 174 / 25.4:               # savefig adds 0.1-inch padding on each side
+                break
+            w, h = fig.get_size_inches()
+            k = (173 / 25.4) / tw
+            fig.set_size_inches(w * k, h * k)
     for ext in ["svg", "pdf", "png", "tiff"]:
-        fig.savefig(FIG / f"{name}.{ext}", dpi=600, bbox_inches="tight")
+        fig.savefig(OUT / f"{name}.{ext}", dpi=600, bbox_inches="tight")
     plt.close(fig)
 
 
 def tag(ax, t, x=-0.02, y=1.02):
+    if FRONTIERS:
+        t = f"({t.upper()})"
     ax.text(x, y, t, transform=ax.transAxes, fontsize=9, fontweight="bold", va="bottom", ha="right")
 
 

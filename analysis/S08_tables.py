@@ -22,7 +22,8 @@ from common import CACHE, FIG, NEGATIVE, OUT_LABEL, PROJ, RES, follow_up_end
 import os
 MS = PROJ / os.environ.get("MS_DIR", "manuscript")   # manuscript (AJG version) or manuscript_ClinicalNutrition
 SRC = MS / "src"
-SRC.mkdir(parents=True, exist_ok=True)
+if os.environ.get("WRITE_MAIN_TABLES", "1") == "1":
+    SRC.mkdir(parents=True, exist_ok=True)
 SPECTRUM = ["Gallstones", "Cholecystitis", "AP", "AP_biliary", "AP_nonbiliary", "CP", "Pancreatitis_any"]
 SECOND = ["AP_alcohol", "Pancreatic_cancer"]
 CONTROLS = ["MASLD", "Cirrhosis", "Dental_caries"] + NEGATIVE
@@ -165,7 +166,8 @@ Values are mean (SD), median (IQR) or n (%). The 24-h recall cohort comprises {n
 Values are HR (95% CI) from Cox models with SSB and ASB in the same model (Model 2): adjusted for age, sex, ethnicity, Townsend deprivation index, education, smoking, alcohol frequency, recalled alcohol intake, physical activity, BMI, diabetes, energy intake, number of recalls and assessment centre. P for trend was obtained by assigning the median intake to each category. Gallstone-related acute pancreatitis was defined as a gallstone record before or within 90 days after the pancreatitis diagnosis, or ICD-10 K85.1. Abbreviations: {ABBR}
 
 {TABLE3}"""
-open(SRC / "表格.md", "w", encoding="utf-8").write(md)
+if os.environ.get("WRITE_MAIN_TABLES", "1") == "1":
+    open(SRC / "表格.md", "w", encoding="utf-8").write(md)
 
 # ---------------------------------------------------------------- supplementary tables
 SI, DATA = [], []
@@ -459,9 +461,11 @@ def orient(sec, land):
         setattr(sec, mg, Cm(1.6))
 
 
-add_text(doc.add_paragraph(), "Supplementary Information", bold=True)
-add_text(doc.add_paragraph(), os.environ.get("SI_TITLE", "Sugar-sweetened and artificially sweetened beverages, plasma "
-                              "proteomic signatures and risk of biliary and pancreatic diseases: a prospective cohort study in the UK Biobank"))
+add_text(doc.add_paragraph(), os.environ.get("SI_HEADING", "Supplementary Information"), bold=True)
+si_title = os.environ.get("SI_TITLE", "Sugar-sweetened and artificially sweetened beverages, plasma "
+                          "proteomic signatures and risk of biliary and pancreatic diseases: a prospective cohort study in the UK Biobank")
+if si_title:                                   # Frontiers: supplementary files carry no title/author information
+    add_text(doc.add_paragraph(), si_title)
 add_text(doc.add_paragraph(), "Contents: Supplementary Tables 1–26; Supplementary Figures 1–5. Supplementary Data 27–33 "
                               "(full protein-level results) are provided in Supplementary_Data.xlsx.")
 first = True
