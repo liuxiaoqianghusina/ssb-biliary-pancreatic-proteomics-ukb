@@ -280,6 +280,62 @@ def fig5():
     save(fig, "Fig5_pathway_split")
 
 
+# ---------------------------------------------------------------- Fig 6 abdominal MRI
+def fig6():
+    ri = pd.read_csv(RES / "mri_intake.csv")
+    rs = pd.read_csv(RES / "mri_signature.csv")
+    phen = ["Pancreas PDFF", "Liver PDFF", "Visceral fat volume", "Abdominal subcutaneous fat volume", "Pancreas volume"]
+    lab = {"Pancreas PDFF": "Pancreas fat (PDFF)", "Liver PDFF": "Liver fat (PDFF)", "Visceral fat volume": "Visceral fat",
+           "Abdominal subcutaneous fat volume": "Abdominal subcutaneous fat", "Pancreas volume": "Pancreas volume"}
+    n_int = ri[(ri["sample"] == "All participants")].groupby("phenotype")["n"].first()
+    n_sig = rs[(rs["sample"] == "Independent sample")].groupby("phenotype")["n"].first()
+    fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.2), sharey=True, gridspec_kw={"wspace": 0.08})
+    y = np.arange(len(phen))[::-1].astype(float)
+
+    def draw(ax, est, specs, xlabel, title, nmap):
+        for (key, col, off, filled, name) in specs:
+            for yi, ph in zip(y, phen):
+                h, l, u = est(key, ph)
+                ax.plot([l, u], [yi + off] * 2, color=col, lw=0.9)
+                ax.plot(h, yi + off, "o" if filled else "o", ms=3.6, color=col, mfc=col if filled else "white", mew=0.9)
+            ax.plot([], [], "o-", color=col, ms=3.6, mfc=col if filled else "white", lw=0.9, label=name)
+        ax.axvline(0, color=GREY, lw=0.6, zorder=0)
+        ax.set_yticks(y)
+        ax.set_yticklabels([f"{lab[p]}\n(n = {int(n_int[p]):,} / {int(n_sig[p]):,})" for p in phen], fontsize=6.5)
+        ax.tick_params(axis="y", length=0)
+        for sp_ in ("top", "right", "left"):
+            ax.spines[sp_].set_visible(False)
+        ax.set_xlabel(xlabel)
+        ax.set_title(title, fontsize=7.5, fontweight="bold")
+        ax.legend(frameon=False, fontsize=6, loc="lower right")
+
+    def e_int(key, ph):
+        b, m = key
+        r = ri[(ri["sample"] == "All participants") & (ri.model == m) & (ri.exposure == b) & (ri.phenotype == ph)].iloc[0]
+        return r.sd_estimate, r.sd_lci, r.sd_uci
+
+    def e_sig(key, ph):
+        s, mutual = key
+        r = rs[(rs["sample"] == "Independent sample") & (rs.model == "A: Model 2 (baseline BMI)") & (rs.signature == s)
+               & (rs.mutual == mutual) & (rs.phenotype == ph)].iloc[0]
+        return r.sd_estimate, r.sd_lci, r.sd_uci
+
+    draw(axes[0], e_int, [(("SSB", "A: Model 2 (baseline BMI)"), RED, 0.24, True, "SSB, BMI-adjusted"),
+                          (("SSB", "C: without BMI"), RED, 0.08, False, "SSB, not BMI-adjusted"),
+                          (("ASB", "A: Model 2 (baseline BMI)"), BLUE, -0.08, True, "ASB, BMI-adjusted"),
+                          (("ASB", "C: without BMI"), BLUE, -0.24, False, "ASB, not BMI-adjusted")],
+         "SD difference per serving/day (95% CI)", "Beverage intake", n_int)
+    draw(axes[1], e_sig, [(("sig_SSB", False), RED, 0.15, True, "SSB signature"),
+                          (("sig_SSB", True), RED, 0.05, False, "SSB signature, mutually adjusted"),
+                          (("sig_ASB", False), BLUE, -0.05, True, "ASB signature"),
+                          (("sig_ASB", True), BLUE, -0.15, False, "ASB signature, mutually adjusted")],
+         "SD difference per SD of signature (95% CI)", "Proteomic signatures (independent sample)", n_sig)
+    tag(axes[0], "a", x=-0.5)
+    tag(axes[1], "b", x=-0.02)
+    fig.text(0.02, -0.02, "n = participants in the intake analysis / in the independent signature sample", fontsize=6)
+    save(fig, "Fig6_abdominal_mri")
+
+
 # ---------------------------------------------------------------- supplementary figures
 def figS1():
     s = pd.read_csv(RES / "intake_substitution.csv")
@@ -372,6 +428,6 @@ def figS4():
 
 
 if __name__ == "__main__":
-    for f in (fig1, fig2, fig3, fig4, fig5, figS1, figS2, figS3, figS4):
+    for f in (fig1, fig2, fig3, fig4, fig5, fig6, figS1, figS2, figS3, figS4):
         f()
         print("done", f.__name__, flush=True)

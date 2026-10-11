@@ -325,7 +325,7 @@ mr_tab = lambda d: pd.DataFrame({"Protein": d.protein, "Outcome (FinnGen R12)": 
                                  "P": d.p.map(fp), "FDR": d.fdr.map(fp)})
 SI.append(("Supplementary Table 20. Cis-pQTL Mendelian randomization of signature proteins (tests with P <0.05)",
            mr_tab(mrp[mrp.p < 0.05]),
-           "232 protein–outcome tests (58 proteins with instruments matched in FinnGen); all results are in Supplementary Data 25. "
+           "232 protein–outcome tests (58 proteins with instruments matched in FinnGen); all results are in Supplementary Data 27. "
            "Instruments: conditionally independent cis-pQTLs from the UKB-PPP discovery cohort (-log10 P >=7.3, r2 <0.01)."))
 cr = pd.read_csv(RES / "coloc_results.csv")
 cr = cr[cr.p12 == 1e-5].assign(Window="Gene ±1 Mb")
@@ -361,7 +361,22 @@ rc2 = pd.DataFrame({"Restriction (cumulative)": rcs.restriction, "Outcome": rcs.
 SI.append(("Supplementary Table 24. Proteomic signatures and biliary and pancreatic diseases after restrictions addressing reverse causation",
            rc2, "Model 2 in the independent signature sample; restrictions as in Supplementary Table 22."))
 sr = pd.read_csv(RES / "substitution_restricted.csv")
-SI[-3] = (SI[-3][0], SI[-3][1], SI[-3][2] + " Substitution estimates in the restricted sample (no dietary change, stable weight, no diabetes) are in Supplementary Data 31.")
+SI[-3] = (SI[-3][0], SI[-3][1], SI[-3][2] + " Substitution estimates in the restricted sample (no dietary change, stable weight, no diabetes) are in Supplementary Data 33.")
+
+mi = pd.read_csv(RES / "mri_intake.csv")
+fmt_m = lambda r: (f"{r.estimate:.2f}% ({r.lci:.2f}% to {r.uci:.2f}%)" if r.scale == "% difference"
+                   else f"{r.estimate:.3f} ({r.lci:.3f} to {r.uci:.3f}) {r.scale}")
+mi_t = pd.DataFrame({"Phenotype": mi.phenotype, "Sample": mi["sample"], "Model": mi.model, "Beverage": mi.exposure,
+                     "n": mi.n.map("{:,}".format), "Difference per serving/day (95% CI)": mi.apply(fmt_m, axis=1),
+                     "P": mi.p.map(fp)})
+SI.append(("Supplementary Table 25. Sweetened beverage intake and abdominal MRI measures at the imaging visit", mi_t,
+           "Linear regression with SSB and ASB mutually adjusted. Model A: Model 2 covariates (including baseline BMI), years from first recall to imaging and imaging centre; Model B: + BMI at the imaging visit; Model C: Model A without BMI. PDFF was log-transformed and is reported as % difference; volumes in litres (pancreas volume in mL)."))
+ms = pd.read_csv(RES / "mri_signature.csv")
+ms_t = pd.DataFrame({"Phenotype": ms.phenotype, "Sample": ms["sample"], "Model": ms.model,
+                     "Signature": ms.signature.map(SIG) + np.where(ms.mutual, " (mutually adjusted)", ""),
+                     "n": ms.n.map("{:,}".format), "Difference per SD (95% CI)": ms.apply(fmt_m, axis=1), "P": ms.p.map(fp)})
+SI.append(("Supplementary Table 26. Proteomic signatures and abdominal MRI measures at the imaging visit", ms_t,
+           "Linear regression; Model A: signature Model 1 covariates (including baseline BMI), years from baseline to imaging and imaging centre; Model B: + BMI at the imaging visit; Model C: Model A without BMI."))
 
 # long tables: Excel only
 pc = pd.read_csv(RES / "signature_protein_cox.csv")
@@ -393,13 +408,13 @@ full_sig = sm.assign(Outcome=sm.outcome.map(LAB), Signature=sm.signature.map(SIG
     ["Outcome", "analysis", "model", "Signature", "events", "n", "HR (95% CI)", "p"]].rename(
     columns={"analysis": "Analysis", "model": "Model", "events": "Cases", "n": "N", "p": "P"})
 
-XL_ONLY = [("Supplementary Data 25. Cis-pQTL Mendelian randomization, all estimates", mrr.assign(protein=mrr.protein)),
-           ("Supplementary Data 26. Protein-wise associations of SSB and ASB with 2,919 plasma proteins", pax),
-           ("Supplementary Data 27. Elastic-net weights of the proteomic signatures", pd.concat(wts)),
-           ("Supplementary Data 28. Individual signature proteins and biliary and pancreatic diseases (Model 1)", pcx),
-           ("Supplementary Data 29. Pathway enrichment (g:Profiler)", enr),
-           ("Supplementary Data 30. All signature–outcome estimates, incl. residual signatures", full_sig),
-           ("Supplementary Data 31. Substitution analyses in the restricted sample", sr)]
+XL_ONLY = [("Supplementary Data 27. Cis-pQTL Mendelian randomization, all estimates", mrr.assign(protein=mrr.protein)),
+           ("Supplementary Data 28. Protein-wise associations of SSB and ASB with 2,919 plasma proteins", pax),
+           ("Supplementary Data 29. Elastic-net weights of the proteomic signatures", pd.concat(wts)),
+           ("Supplementary Data 30. Individual signature proteins and biliary and pancreatic diseases (Model 1)", pcx),
+           ("Supplementary Data 31. Pathway enrichment (g:Profiler)", enr),
+           ("Supplementary Data 32. All signature–outcome estimates, incl. residual signatures", full_sig),
+           ("Supplementary Data 33. Substitution analyses in the restricted sample", sr)]
 DATA = [(t, dd) for t, dd, _ in SI] + XL_ONLY
 
 # ---------------------------------------------------------------- Word: supplementary information
@@ -441,7 +456,7 @@ def orient(sec, land):
 add_text(doc.add_paragraph(), "Supplementary Information", bold=True)
 add_text(doc.add_paragraph(), os.environ.get("SI_TITLE", "Sugar-sweetened and artificially sweetened beverages, plasma "
                               "proteomic signatures and risk of biliary and pancreatic diseases: a prospective cohort study in the UK Biobank"))
-add_text(doc.add_paragraph(), "Contents: Supplementary Tables 1–24; Supplementary Figures 1–4. Supplementary Data 25–31 "
+add_text(doc.add_paragraph(), "Contents: Supplementary Tables 1–26; Supplementary Figures 1–4. Supplementary Data 27–33 "
                               "(full protein-level results) are provided in Supplementary_Data.xlsx.")
 first = True
 for title, dd, note in SI:

@@ -4,7 +4,7 @@ Analysis code for the manuscript:
 
 > **Sugar-sweetened beverages and risk of gallstone disease and pancreatitis: a prospective cohort study with proteomic and genetic analyses.** Boming Xu, Xiaobo Liu, Yubin Wang, Yingxuan Huang, Chanchan Lin, Yingyi Li, Yisen Huang, Xiaoqiang Liu. Submitted to *Clinical Nutrition*.
 
-The study relates intake of sugar-sweetened beverages (SSBs) and artificially sweetened beverages (ASBs), assessed with Oxford WebQ 24-h dietary recalls, to incident gallstone disease, cholecystitis, acute pancreatitis (gallstone-related and non-gallstone) and chronic pancreatitis. It also derives elastic-net proteomic signatures of SSB and ASB intake from 2,919 Olink plasma proteins, tests them in an independent sample, assesses reverse causation, and uses cis-pQTL Mendelian randomization with colocalization (UKB-PPP, FinnGen R12) to examine the signature proteins.
+The study relates intake of sugar-sweetened beverages (SSBs) and artificially sweetened beverages (ASBs), assessed with Oxford WebQ 24-h dietary recalls, to incident gallstone disease, cholecystitis, acute pancreatitis (gallstone-related and non-gallstone) and chronic pancreatitis. It also derives elastic-net proteomic signatures of SSB and ASB intake from 2,919 Olink plasma proteins, tests them in an independent sample, assesses reverse causation, relates intake and signatures to abdominal MRI measures of organ fat, and uses cis-pQTL Mendelian randomization with colocalization (UKB-PPP, FinnGen R12) to examine the signature proteins.
 
 **No data are included in this repository.** UK Biobank data are available to approved researchers on application (https://www.ukbiobank.ac.uk); this work used application number 1099827. FinnGen and UKB-PPP summary statistics are publicly available.
 
@@ -23,6 +23,7 @@ The study relates intake of sugar-sweetened beverages (SSBs) and artificially sw
 | | `S06_ph.py`, `S06b_ph_timesplit.py` | Proportional-hazards tests and time-split estimates |
 | | `S10_cis_mr.py`, `S11_coloc.py`, `S11b_coloc_window.py` | cis-pQTL Mendelian randomization (UKB-PPP → FinnGen R12) and colocalization (coloc.abf) |
 | | `S12_reverse_causation.py`, `S12b_substitution_restricted.py` | Restrictions to stable diet/weight, no diabetes and BMI <30; habitual consumption patterns |
+| | `S14_abdominal_mri.py` | Intake and signatures versus pancreatic and liver PDFF, visceral and subcutaneous fat and pancreas volume at the imaging visit |
 | | `S07_figures.py`, `S08_tables.py`, `S13_graphical_abstract.py` | Figures, tables, supplementary tables and the graphical abstract |
 
 ## Configuration
@@ -55,6 +56,7 @@ analysis/S11_coloc.py            # needs UKB-PPP regional summary statistics fro
 analysis/S11b_coloc_window.py
 analysis/S12_reverse_causation.py
 analysis/S12b_substitution_restricted.py
+analysis/S14_abdominal_mri.py        # after S12 (uses cache/diet_change.pkl)
 analysis/S07_figures.py
 analysis/S08_tables.py
 analysis/S13_graphical_abstract.py
