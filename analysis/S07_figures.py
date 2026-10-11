@@ -169,8 +169,8 @@ def fig2():
     save(fig, "Fig2_intake_outcomes")
 
 
-# ---------------------------------------------------------------- Fig 3 proteome
-def fig3():
+# ---------------------------------------------------------------- Supplementary Fig 4 proteome
+def figS4():
     a = pd.read_csv(RES / "protein_assoc.csv")
     a = a[a.model == "main"]
     e = pd.read_csv(RES / "enrichment_SSB_FDR.csv").sort_values("p_adj").drop_duplicates("term").head(12)
@@ -218,11 +218,11 @@ def fig3():
     for sp_ in ("top", "right"):
         ax.spines[sp_].set_visible(False)
     tag(ax, "c", x=-0.78, y=1.0)
-    save(fig, "Fig3_beverage_proteome")
+    save(fig, "FigS4_beverage_proteome")
 
 
-# ---------------------------------------------------------------- Fig 4 signatures
-def fig4():
+# ---------------------------------------------------------------- Fig 3 signatures
+def fig3():
     m = pd.read_csv(RES / "signature_main.csv")
     m = m[m.analysis == "per SD"]
     rows = SPECTRUM + CONTROLS
@@ -240,11 +240,11 @@ def fig4():
         tag(ax, t, x=-0.02 if t == "b" else -0.6)
     axes[1].legend(frameon=False, loc="lower right", fontsize=6.3,
                    title="M1 covariates; M2 + biomarkers;\nM3 + BMI signature", title_fontsize=5.8)
-    save(fig, "Fig4_signature_outcomes")
+    save(fig, "Fig3_signature_outcomes")
 
 
-# ---------------------------------------------------------------- Fig 5 pathway split
-def fig5():
+# ---------------------------------------------------------------- Fig 4 pathway split
+def fig4():
     m = pd.read_csv(RES / "signature_main.csv")
     mm = m[(m.analysis == "per SD, mutually adjusted") & (m.model == "M2")]
     het = pd.read_csv(RES / "heterogeneity_ap.csv")
@@ -292,11 +292,11 @@ def fig5():
     cb.set_label("HR per SD (M1)", fontsize=6)
     ax2.set_title("Individual signature proteins (* FDR < 0.05, ** < 0.01)", fontsize=6.5)
     tag(ax2, "b", x=-0.35)
-    save(fig, "Fig5_pathway_split")
+    save(fig, "Fig4_pathway_split")
 
 
-# ---------------------------------------------------------------- Fig 6 abdominal MRI
-def fig6():
+# ---------------------------------------------------------------- Fig 5 abdominal MRI
+def fig5():
     ri = pd.read_csv(RES / "mri_intake.csv")
     rs = pd.read_csv(RES / "mri_signature.csv")
     phen = ["Pancreas PDFF", "Liver PDFF", "Visceral fat volume", "Abdominal subcutaneous fat volume", "Pancreas volume"]
@@ -348,7 +348,7 @@ def fig6():
     tag(axes[0], "a", x=-0.5)
     tag(axes[1], "b", x=-0.02)
     fig.text(0.02, -0.02, "n = participants in the intake analysis / in the independent signature sample", fontsize=6)
-    save(fig, "Fig6_abdominal_mri")
+    save(fig, "Fig5_abdominal_mri")
 
 
 # ---------------------------------------------------------------- supplementary figures
@@ -403,7 +403,7 @@ def figS1():
     save(fig, "FigS1_subgroups")
 
 
-def figS4():
+def figS5():
     t = pd.read_csv(RES / "signature_tertiles.csv")
     t = t[t.model == "M2"]
     outs = ["Gallstones", "AP", "AP_biliary", "AP_nonbiliary", "CP"]
@@ -419,7 +419,7 @@ def figS4():
         ax.set_title(f"{s.split('_')[1]} signature tertiles", fontsize=7)
         ax.legend(frameon=False, fontsize=6, loc="lower right")
         tag(ax, tg, x=-0.02 if tg == "b" else -0.7)
-    save(fig, "FigS4_signature_tertiles")
+    save(fig, "FigS5_signature_tertiles")
 
 
 def figS3():
@@ -443,6 +443,6 @@ def figS3():
 
 
 if __name__ == "__main__":
-    for f in (fig1, fig2, fig3, fig4, fig5, fig6, figS1, figS2, figS3, figS4):
+    for f in (fig1, fig2, fig3, fig4, fig5, figS1, figS2, figS3, figS4, figS5):
         f()
         print("done", f.__name__, flush=True)

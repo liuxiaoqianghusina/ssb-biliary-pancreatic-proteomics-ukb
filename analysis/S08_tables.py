@@ -138,7 +138,7 @@ t3 = pd.DataFrame(rows)
 
 # ---------------------------------------------------------------- write main tables (Markdown)
 # MAIN_TABLES=2 (Clinical Nutrition version) leaves Table 3 out of the main text; its estimates are in
-# Supplementary Table 18 (Model 2), Fig. 5a and Supplementary Data 31 (mutually adjusted).
+# Supplementary Table 18 (Model 2), Fig. 4a and Supplementary Data 31 (mutually adjusted).
 n_int, n_sig = len(A), len(B)
 TABLE3 = (f"""\\pagebreak
 
@@ -462,7 +462,7 @@ def orient(sec, land):
 add_text(doc.add_paragraph(), "Supplementary Information", bold=True)
 add_text(doc.add_paragraph(), os.environ.get("SI_TITLE", "Sugar-sweetened and artificially sweetened beverages, plasma "
                               "proteomic signatures and risk of biliary and pancreatic diseases: a prospective cohort study in the UK Biobank"))
-add_text(doc.add_paragraph(), "Contents: Supplementary Tables 1–26; Supplementary Figures 1–4. Supplementary Data 27–33 "
+add_text(doc.add_paragraph(), "Contents: Supplementary Tables 1–26; Supplementary Figures 1–5. Supplementary Data 27–33 "
                               "(full protein-level results) are provided in Supplementary_Data.xlsx.")
 first = True
 for title, dd, note in SI:
@@ -487,7 +487,14 @@ FIGS = [("FigS2_substitution", "Supplementary Figure 2. Substitution analyses. H
          "SSB (a) or ASB (b) with 1 serving/day of another beverage, from Model 2 including all beverages."),
         ("FigS1_subgroups", "Supplementary Figure 1. Subgroup analyses of beverage intake and gallstone disease (a) and acute "
          "pancreatitis (b). HR per serving/day (Model 2); P for interaction from likelihood-ratio tests."),
-        ("FigS4_signature_tertiles", "Supplementary Figure 4. Tertiles of the SSB (a) and ASB (b) proteomic signatures and "
+        ("FigS4_beverage_proteome", "Supplementary Figure 4. Plasma proteins associated with sweetened beverage intake. (a, b) "
+         "Associations of SSB and ASB intake with 2,919 plasma proteins. Each point represents one protein; the x axis shows the "
+         "difference in protein level (SD) per additional daily serving and the y axis shows −log₁₀ P. Red and blue points "
+         "indicate positive and negative associations at false discovery rate (FDR) <0.05, and the dashed line marks the "
+         "FDR = 0.05 threshold. Models were adjusted for Model 2 covariates, fasting time and the other beverage. (c) The top 12 "
+         "pathways enriched among SSB-related proteins (FDR <0.05), from g:Profiler with all measured proteins as background. "
+         "Full results are in Supplementary Data 28 and 29."),
+        ("FigS5_signature_tertiles", "Supplementary Figure 5. Tertiles of the SSB (a) and ASB (b) proteomic signatures and "
          "biliary and pancreatic diseases (Model 2), lowest tertile as reference."),
         ("FigS3_biomarkers", "Supplementary Figure 3. Percentage difference in baseline blood biomarkers per serving/day of SSB "
          "and ASB (Model 2 covariates and fasting time; mutually adjusted).")]
