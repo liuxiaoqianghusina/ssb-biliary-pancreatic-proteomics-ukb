@@ -375,7 +375,7 @@ mi_t = pd.DataFrame({"Phenotype": mi.phenotype, "Sample": mi["sample"], "Model":
 SI.append(("Supplementary Table 23. Sweetened beverage intake and abdominal MRI measures at the imaging visit", mi_t,
            "Linear regression with SSB and ASB mutually adjusted. Model A: Model 2 covariates (including baseline BMI), years from first recall to imaging and imaging centre; Model B: + BMI at the imaging visit; Model C: Model A without BMI. PDFF was log-transformed and is reported as % difference; volumes in litres (pancreas volume in mL)."))
 ms = pd.read_csv(RES / "mri_signature.csv")
-ms_t = pd.DataFrame({"Phenotype": ms.phenotype, "Sample": ms["sample"], "Model": ms.model,
+ms_t = pd.DataFrame({"Phenotype": ms.phenotype, "Sample": ms["sample"], "Model": ms.model.str.replace("Model 2", "signature Model 1"),
                      "Signature": ms.signature.map(SIG) + np.where(ms.mutual, " (mutually adjusted)", ""),
                      "n": ms.n.map("{:,}".format), "Difference per SD (95% CI)": ms.apply(fmt_m, axis=1), "P": ms.p.map(fp)})
 SI.append(("Supplementary Table 24. Proteomic signatures and abdominal MRI measures at the imaging visit", ms_t,

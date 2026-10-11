@@ -65,9 +65,9 @@ ax.text(57.6, 28.8, "Robust after excluding diet/weight change, diabetes, obesit
 
 box(34.6, 9.5, 46, 15.9, "#eaf1fa", ec=BLUE)
 ax.text(57.6, 22.7, "Artificially sweetened beverages (ASB)", ha="center", fontsize=14.5, fontweight="bold", color=BLUE)
-ax.text(36.4, 18.9, "Intake associations disappear after", fontsize=13, va="center")
+ax.text(36.4, 18.9, "Intake associations weaken after", fontsize=13, va="center")
 ax.text(36.4, 16.0, "restriction → reverse causation", fontsize=13, va="center")
-ax.text(36.4, 13.3, "Organ fat on MRI explained by BMI", fontsize=11.5, va="center", color="#555555")
+ax.text(36.4, 13.3, "Organ fat on MRI largely explained by BMI", fontsize=11.5, va="center", color="#555555")
 ax.text(36.4, 11.0, "Proteomic signature still marks pancreatitis risk", fontsize=11.5, va="center", color="#555555")
 
 arrow(81.6, 37.3, 86.3, 37.3, color=RED)
