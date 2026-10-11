@@ -75,9 +75,12 @@ def fig1():
     fi = pd.read_csv(RES / "flow_intake.csv", index_col=0)["n"]
     fs = pd.read_csv(RES / "flow_signature.csv", index_col=0)["n"]
     perf = pd.read_csv(RES / "signature_performance.csv").set_index("signature")
+    mf = pd.read_csv(RES / "mri_flow.csv", index_col=0)["n"]
     n_int = int(fi.iloc[-1])
-    fig, ax = plt.subplots(figsize=(7.2, 3.7))
-    ax.set_xlim(0, 100); ax.set_ylim(0, 52); ax.axis("off")
+    mi = mf[mf.index.str.startswith("intake sample")]
+    ms = mf[mf.index.str.startswith("signature sample (Independent sample)")]
+    fig, ax = plt.subplots(figsize=(7.2, 5.45))
+    ax.set_xlim(0, 100); ax.set_ylim(0, 77); ax.axis("off")
 
     def box(x, y, w, h, title, body, color):
         ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.4,rounding_size=1.2", fc=color, ec="#4a4a4a", lw=0.6))
@@ -87,27 +90,39 @@ def fig1():
     def arrow(x1, y1, x2, y2):
         ax.annotate("", (x2, y2), (x1, y1), arrowprops=dict(arrowstyle="-|>", lw=0.7, color="#4a4a4a"))
 
-    box(1, 30, 29, 20, "Beverage intake",
+    box(1, 56, 29, 20, "Beverage intake",
         f"UK Biobank Oxford WebQ 24-h recalls\n(2009–2012), analytic n = {n_int:,}\n"
         "SSB: fizzy drinks + squash\nASB: low-calorie drinks\n(servings/day, mutually adjusted)", "#fdecea")
-    box(36, 30, 28, 20, "Beverage–proteome sample",
+    box(36, 56, 28, 20, "Beverage–proteome sample",
         f"Randomly selected Olink participants\nwith ≥1 valid recall, n = 17,183\n"
         "2,919 plasma proteins\nprotein-wise linear models\nelastic-net signatures", "#fdf3e7")
-    box(70, 30, 29, 20, "Proteomic signatures",
+    box(70, 56, 29, 20, "Proteomic signatures",
         f"Training 70% (n = {int(perf.loc['sig_SSB', 'n_train']):,})\nTesting 30% (n = {int(perf.loc['sig_SSB', 'n_test']):,})\n"
         f"SSB: {int(perf.loc['sig_SSB', 'n_proteins'])} proteins, r = {perf.loc['sig_SSB', 'pearson_r_test']:.2f}\n"
         f"ASB: {int(perf.loc['sig_ASB', 'n_proteins'])} proteins, r = {perf.loc['sig_ASB', 'pearson_r_test']:.2f}", "#eef6ec")
-    box(1, 2, 29, 23, "Intake → disease",
+    box(1, 28, 29, 23, "Intake → disease",
         f"n = {n_int:,}; time zero = first recall\nM1: age, sex, energy, recalls, centre\n"
         "M2: + sociodemographic, lifestyle,\nalcohol, BMI, diabetes\nM3: + TG, HbA1c, CRP, GGT", "#fdecea")
-    box(36, 2, 28, 23, "Biliary–pancreatic outcomes",
+    box(36, 28, 28, 23, "Biliary–pancreatic outcomes",
         "Gallstone disease, cholecystitis\nAcute pancreatitis (AP):\ngallstone-related vs non-gallstone\nChronic pancreatitis\n"
         "Positive controls: MASLD, cirrhosis,\ndental caries; 5 negative controls", "#f3eef8")
-    box(70, 2, 29, 23, "Signature → disease",
+    box(70, 28, 29, 23, "Signature → disease",
         f"Independent Olink sample\nn = {int(fs.iloc[3]):,} (training set excluded)\n"
         "M1: + covariates, BMI, diabetes\nM2: + TG, HbA1c, CRP, GGT, kidney\nM3: + BMI proteomic signature", "#eef6ec")
-    arrow(30.5, 40, 35.5, 40); arrow(64.5, 40, 69.5, 40); arrow(15.5, 29.5, 15.5, 25.5)
-    arrow(84.5, 29.5, 84.5, 25.5); arrow(30.5, 13, 35.5, 13); arrow(69.5, 13, 64.5, 13)
+    box(1, 2, 29, 20, "Intake → organ fat",
+        f"Recall participants with MRI\nn = {int(mi.min()):,}–{int(mi.max()):,}\n"
+        "M2 + years to imaging, imaging centre\n± BMI at the imaging visit\nSSB and ASB mutually adjusted", "#fdecea")
+    box(36, 2, 28, 20, "Abdominal MRI (2014–2020)",
+        "Pancreas and liver fat (PDFF)\nVisceral fat volume\nAbdominal subcutaneous fat volume\nPancreas volume\n"
+        "Linear regression", "#e8f1f8")
+    box(70, 2, 29, 20, "Signature → organ fat",
+        f"Independent Olink sample with MRI\nn = {int(ms.min()):,}–{int(ms.max()):,}\n"
+        "M1 + years to imaging, imaging centre\n± BMI at the imaging visit\neach signature alone and together", "#eef6ec")
+    arrow(30.5, 66, 35.5, 66); arrow(64.5, 66, 69.5, 66)
+    arrow(15.5, 55.5, 15.5, 51.5); arrow(84.5, 55.5, 84.5, 51.5)
+    arrow(30.5, 39.5, 35.5, 39.5); arrow(69.5, 39.5, 64.5, 39.5)
+    arrow(15.5, 27.5, 15.5, 22.5); arrow(84.5, 27.5, 84.5, 22.5)
+    arrow(30.5, 12, 35.5, 12); arrow(69.5, 12, 64.5, 12)
     save(fig, "Fig1_design")
 
 

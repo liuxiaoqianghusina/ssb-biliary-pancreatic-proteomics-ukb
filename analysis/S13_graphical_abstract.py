@@ -45,28 +45,30 @@ box(1.5, 9.5, 27, 36.5, "#f6f6f6")
 ax.text(15, 42.6, "Prospective cohort", ha="center", fontsize=15, fontweight="bold")
 ax.text(15, 37.4, "193,356 adults", ha="center", fontsize=19, fontweight="bold", color=DARK)
 ax.text(15, 33.7, "24-h dietary recalls\n11.8-year follow-up", ha="center", va="top", fontsize=13, linespacing=1.3)
-can(9, 15.5, RED, "SSB", 1.25)
-can(21, 15.5, BLUE, "ASB", 1.25)
-ax.text(15, 11.6, "Plasma proteome (2,919 proteins)\n+ Mendelian randomization", ha="center", va="center", fontsize=10.5,
-        color="#444444", linespacing=1.25)
+can(9, 17.0, RED, "SSB", 1.25)
+can(21, 17.0, BLUE, "ASB", 1.25)
+ax.text(15, 12.4, "Plasma proteome (2,919 proteins)\nAbdominal MRI organ fat\nMendelian randomization", ha="center",
+        va="center", fontsize=10, color="#444444", linespacing=1.2)
 
 arrow(29.6, 28, 33.6, 28)
 
 # ---------------------------------------------------------------- middle: intake findings
-box(34.6, 28.6, 46, 17.4, "#fdecea", ec=RED)
-ax.text(57.6, 43.4, "Sugar-sweetened beverages (SSB)", ha="center", fontsize=14.5, fontweight="bold", color=RED)
-ax.text(36.4, 39.3, "↑ Gallstone disease", fontsize=13.5, va="center")
-ax.text(36.4, 35.6, "↑ Acute & chronic pancreatitis", fontsize=13.5, va="center")
-ax.text(36.4, 31.6, "Habitual intake: acute pancreatitis HR 1.86", fontsize=12, va="center", color="#555555")
-ax.plot([74.6, 76.4, 79.6], [37.6, 35.4, 40.0], color=GREEN, lw=4.5, solid_capstyle="round")   # check mark
-ax.text(57.6, 29.6, "Robust after excluding diet/weight change, diabetes, obesity", ha="center", fontsize=9.8,
+box(34.6, 27.9, 46, 18.1, "#fdecea", ec=RED)
+ax.text(57.6, 43.5, "Sugar-sweetened beverages (SSB)", ha="center", fontsize=14.5, fontweight="bold", color=RED)
+ax.text(36.4, 40.0, "↑ Gallstone disease", fontsize=13.5, va="center")
+ax.text(36.4, 36.9, "↑ Acute & chronic pancreatitis", fontsize=13.5, va="center")
+ax.text(36.4, 33.8, "↑ Pancreatic, liver & visceral fat (MRI)", fontsize=13.5, va="center")
+ax.text(36.4, 30.9, "Habitual intake: acute pancreatitis HR 1.86", fontsize=12, va="center", color="#555555")
+ax.plot([74.6, 76.4, 79.6], [38.0, 35.8, 40.4], color=GREEN, lw=4.5, solid_capstyle="round")   # check mark
+ax.text(57.6, 28.8, "Robust after excluding diet/weight change, diabetes, obesity", ha="center", fontsize=9.8,
         color=GREEN, style="italic")
 
-box(34.6, 9.5, 46, 16.6, "#eaf1fa", ec=BLUE)
-ax.text(57.6, 23.4, "Artificially sweetened beverages (ASB)", ha="center", fontsize=14.5, fontweight="bold", color=BLUE)
-ax.text(36.4, 19.0, "Intake associations disappear after", fontsize=13, va="center")
-ax.text(36.4, 15.6, "restriction → reverse causation", fontsize=13, va="center")
-ax.text(36.4, 11.8, "Proteomic signature still marks pancreatitis risk", fontsize=11.5, va="center", color="#555555")
+box(34.6, 9.5, 46, 15.9, "#eaf1fa", ec=BLUE)
+ax.text(57.6, 22.7, "Artificially sweetened beverages (ASB)", ha="center", fontsize=14.5, fontweight="bold", color=BLUE)
+ax.text(36.4, 18.9, "Intake associations disappear after", fontsize=13, va="center")
+ax.text(36.4, 16.0, "restriction → reverse causation", fontsize=13, va="center")
+ax.text(36.4, 13.3, "Organ fat on MRI explained by BMI", fontsize=11.5, va="center", color="#555555")
+ax.text(36.4, 11.0, "Proteomic signature still marks pancreatitis risk", fontsize=11.5, va="center", color="#555555")
 
 arrow(81.6, 37.3, 86.3, 37.3, color=RED)
 arrow(81.6, 17.5, 86.3, 17.5, color=BLUE)
