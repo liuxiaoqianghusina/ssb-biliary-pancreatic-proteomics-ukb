@@ -138,7 +138,7 @@ t3 = pd.DataFrame(rows)
 
 # ---------------------------------------------------------------- write main tables (Markdown)
 # MAIN_TABLES=2 (Clinical Nutrition version) leaves Table 3 out of the main text; its estimates are in
-# Supplementary Table 13 (Model 2), Fig. 5a and Supplementary Data (mutually adjusted).
+# Supplementary Table 18 (Model 2), Fig. 5a and Supplementary Data 31 (mutually adjusted).
 n_int, n_sig = len(A), len(B)
 TABLE3 = (f"""\\pagebreak
 
@@ -189,13 +189,13 @@ defs = pd.DataFrame([
     ("Negative controls", "Cataract (H25, H26), inguinal hernia (K40), hearing loss (H90, H91), upper-limb mononeuropathy (G56), varicose veins (I83); First Occurrence"),
     ("Prevalent cases", "Record dated on or before time zero, or self-reported at baseline (gallstones 1162, pancreatitis 1164, liver disease 1158/1604, cataract 1278); prior cholecystectomy excluded for gallbladder outcomes"),
 ], columns=["Outcome", "Definition"])
-SI.append(("Supplementary Table 1. Outcome definitions", defs, "Follow-up ended at the first of outcome, death, loss to follow-up or 31 December 2022."))
+SI.append(("Supplementary Table 2. Outcome definitions", defs, "Follow-up ended at the first of outcome, death, loss to follow-up or 31 December 2022."))
 
 fi = pd.read_csv(RES / "flow_intake.csv").set_axis(["Step", "n"], axis=1)
 fsg = pd.read_csv(RES / "flow_signature.csv").set_axis(["Step", "n"], axis=1)
 flow = pd.concat([fi.assign(Sample="24-h recall cohort"), fsg.assign(Sample="Signature sample")])[["Sample", "Step", "n"]]
 flow["n"] = flow["n"].map("{:,}".format)
-SI.append(("Supplementary Table 2. Selection of participants", flow, "The beverage–proteome (training/testing) sample comprised 17,183 randomly selected Olink participants with ≥1 valid recall."))
+SI.append(("Supplementary Table 1. Selection of participants", flow, "The beverage–proteome (training/testing) sample comprised 17,183 randomly selected Olink participants with ≥1 valid recall."))
 
 pyt = py[py.outcome.isin(SPECTRUM)].copy()
 pyt["Outcome"] = pyt.outcome.map(LAB)
@@ -235,30 +235,30 @@ sg = pd.read_csv(RES / "intake_subgroups.csv")
 sg = pd.DataFrame({"Outcome": sg.outcome.map(LAB), "Beverage": sg.exposure, "Subgroup": sg.subgroup, "Level": sg.level.str.replace(">=", "≥"),
                    "Cases": sg.events.map("{:,}".format), "HR per serving/day": [ci(*x) for x in sg[["hr", "lci", "uci"]].to_numpy()],
                    "P for interaction": sg.p_interaction.map(fp)})
-SI.append(("Supplementary Table 7. Subgroup analyses of beverage intake", sg, "Model 2 fitted within strata; P for interaction from likelihood-ratio tests of beverage × subgroup terms."))
+SI.append(("Supplementary Table 9. Subgroup analyses of beverage intake", sg, "Model 2 fitted within strata; P for interaction from likelihood-ratio tests of beverage × subgroup terms."))
 
 st = pd.read_csv(RES / "intake_substitution.csv")
 st = pd.DataFrame({"Outcome": st.outcome.map(LAB), "Replace 1 serving/day of": st["replace"],
                    "With 1 serving/day of": st["with"].replace({"juice": "fruit juice"}),
                    "HR (95% CI)": [ci(*x) for x in st[["hr", "lci", "uci"]].to_numpy()], "P": st.p.map(fp)})
-SI.append(("Supplementary Table 8. Substitution analyses", st, "Model 2 including SSB, ASB, water, tea, coffee and fruit juice simultaneously; HRs are differences between beverage coefficients."))
+SI.append(("Supplementary Table 10. Substitution analyses", st, "Model 2 including SSB, ASB, water, tea, coffee and fruit juice simultaneously; HRs are differences between beverage coefficients."))
 
 bm = pd.read_csv(RES / "biomarkers.csv")
 bm = pd.DataFrame({"Biomarker": bm.biomarker, "Beverage": bm.exposure, "Adjustment": bm.adjustment, "n": bm.n.map("{:,}".format),
                    "% difference per serving/day (95% CI)": [f"{a:.2f} ({b:.2f} to {c:.2f})" for a, b, c in bm[["pct", "lci", "uci"]].to_numpy()],
                    "P": bm.p.map(fp)})
-SI.append(("Supplementary Table 9. Beverage intake and baseline blood biomarkers", bm, "Linear regression of log-transformed biomarkers on SSB and ASB (mutually adjusted) with Model 2 covariates and fasting time."))
+SI.append(("Supplementary Table 11. Beverage intake and baseline blood biomarkers", bm, "Linear regression of log-transformed biomarkers on SSB and ASB (mutually adjusted) with Model 2 covariates and fasting time."))
 
 pa = pd.read_csv(RES / "protein_assoc.csv")
 cnt = pa.groupby(["model", "exposure"]).apply(lambda g: pd.Series({"Proteins at FDR <0.05": int((g.fdr < 0.05).sum()),
                                                                    "Positive": int(((g.fdr < 0.05) & (g.beta > 0)).sum())})).reset_index()
 cnt.columns = ["Model", "Beverage", "Proteins at FDR <0.05", "Positive"]
-SI.append(("Supplementary Table 10. Number of plasma proteins associated with beverage intake", cnt,
-           "Main model: Model 2 covariates, fasting time and the other beverage; 'without BMI' removes BMI. Full results are in Supplementary Data."))
+SI.append(("Supplementary Table 15. Number of plasma proteins associated with beverage intake", cnt,
+           "Main model: Model 2 covariates, fasting time and the other beverage; 'without BMI' removes BMI. Full results are in Supplementary Data 28."))
 rep = pd.read_csv(RES / "natfood_replication.csv")
 rep = pd.DataFrame({"Beverage": rep.exposure, "Protein": rep.protein.str.upper(), "β per serving/day": rep.beta.map("{:.3f}".format),
                     "P": rep.p.map(fp), "FDR": rep.fdr.map(fp)})
-SI.append(("Supplementary Table 11. Replication of the proteins highlighted by Zhao et al. (Nat Food 2025, Fig. 4)", rep,
+SI.append(("Supplementary Table 16. Replication of the proteins highlighted by Zhao et al. (Nat Food 2025, Fig. 4)", rep,
            "Proteins as reported in the volcano plots of the original study; estimates from the main model of this study."))
 perf = pd.read_csv(RES / "signature_performance.csv")
 perf = pd.DataFrame({"Signature": perf.signature.map(SIG), "Target": perf.target, "Training n": perf.n_train.map("{:,}".format),
@@ -266,7 +266,7 @@ perf = pd.DataFrame({"Signature": perf.signature.map(SIG), "Target": perf.target
                      "Pearson r (test)": perf.pearson_r_test.map("{:.3f}".format),
                      "Spearman r with intake (test)": perf.spearman_r_test.map("{:.3f}".format),
                      "r with BMI signature": perf.r_with_BMI_signature.map("{:.2f}".format)})
-SI.append(("Supplementary Table 12. Performance of the proteomic signatures", perf,
+SI.append(("Supplementary Table 17. Performance of the proteomic signatures", perf,
            "Residual signatures were trained on intake residualised on demographic, lifestyle, adiposity (BMI, waist), liver (ALT, GGT), glycaemic (HbA1c), lipid (TG), kidney (cystatin C, creatinine) and inflammatory (CRP) covariates."))
 
 rows = []
@@ -281,7 +281,7 @@ for o in SPECTRUM + SECOND + ALTDEF + CONTROLS:
             r[f"{SIG[s]}, {mdl.replace('M', 'Model ')}"] = ci(x.hr, x.lci, x.uci)
     rows.append(r)
 s13 = pd.DataFrame(rows)
-SI.append(("Supplementary Table 13. Proteomic signatures and all outcomes across adjustment models (HR per SD)",
+SI.append(("Supplementary Table 18. Proteomic signatures and all outcomes across adjustment models (HR per SD)",
            s13[["Outcome", "Cases/N"] + [c for c in s13.columns if c.startswith(("SSB", "ASB"))]],
            "Model 1: age, sex, ethnicity, Townsend index, education, smoking, alcohol frequency, physical activity, BMI, diabetes, fasting time, centre. Model 2: + TG, HbA1c, CRP, GGT, cystatin C, creatinine. Model 3: + BMI proteomic signature. Residual signatures are shown in Supplementary Data."))
 tt = pd.read_csv(RES / "signature_tertiles.csv")
@@ -289,26 +289,26 @@ tt = tt[tt.outcome.isin(SPECTRUM)]
 tt = pd.DataFrame({"Outcome": tt.outcome.map(LAB), "Signature": tt.signature.map(SIG), "Model": tt.model.str.replace("M", "Model "),
                    "Tertile": tt.tertile + " vs T1", "HR (95% CI)": [ci(*x) for x in tt[["hr", "lci", "uci"]].to_numpy()],
                    "P for trend": tt.p_trend.map(fp)})
-SI.append(("Supplementary Table 14. Signature tertiles and biliary and pancreatic diseases", tt, ""))
+SI.append(("Supplementary Table 19. Signature tertiles and biliary and pancreatic diseases", tt, ""))
 ss = pd.read_csv(RES / "signature_sensitivity.csv")
 ss = pd.DataFrame({"Outcome": ss.outcome.map(LAB), "Analysis": ss.analysis, "Signature": ss.signature.map(SIG),
                    "Cases": ss.events.map("{:,}".format), "HR per SD (95% CI)": [ci(*x) for x in ss[["hr", "lci", "uci"]].to_numpy()],
                    "P": ss.p.map(fp)})
-SI.append(("Supplementary Table 15. Sensitivity analyses of the proteomic signatures", ss,
+SI.append(("Supplementary Table 21. Sensitivity analyses of the proteomic signatures", ss,
            "Model 2 unless stated; the gallstone-confounder analysis adds those covariates to Model 1."))
 het = pd.read_csv(RES / "heterogeneity_ap.csv")
 het = pd.DataFrame({"Analysis": het.analysis, "Exposure": het.exposure.map(lambda x: SIG.get(x, x)),
                     "HR, gallstone-related AP": het.hr_biliary.map("{:.2f}".format),
                     "HR, non-gallstone AP": het.hr_nonbiliary.map("{:.2f}".format),
                     "Ratio of HRs": het.ratio_of_hr.map("{:.2f}".format), "P for heterogeneity": het.p_heterogeneity.map(fp)})
-SI.append(("Supplementary Table 16. Heterogeneity between gallstone-related and non-gallstone acute pancreatitis", het,
+SI.append(("Supplementary Table 20. Heterogeneity between gallstone-related and non-gallstone acute pancreatitis", het,
            "z test on the difference of log HRs, treating the two subtype estimates as independent."))
 evt = pd.read_csv(RES / "evalues.csv")
 evt = evt[evt.outcome.isin(SPECTRUM)]
 evt = pd.DataFrame({"Source": evt.source, "Outcome": evt.outcome.map(LAB), "Exposure": evt.exposure.map(lambda x: SIG.get(x, x)),
                     "HR": evt.hr.map("{:.2f}".format), "E-value (point estimate)": evt.e_value.map("{:.2f}".format),
                     "E-value (CI limit)": evt.e_value_ci.map("{:.2f}".format)})
-SI.append(("Supplementary Table 17. E-values for unmeasured confounding", evt, "E-value of 1.00 for the CI limit indicates that the CI includes 1."))
+SI.append(("Supplementary Table 22. E-values for unmeasured confounding", evt, "E-value of 1.00 for the CI limit indicates that the CI includes 1."))
 
 pht = pd.read_csv(RES / "ph_test.csv")
 pht = pd.DataFrame({"Analysis": pht.analysis, "Outcome": pht.outcome.map(LAB), "Exposure": pht.term.map(lambda x: SIG.get(x, x)),
@@ -316,9 +316,9 @@ pht = pd.DataFrame({"Analysis": pht.analysis, "Outcome": pht.outcome.map(LAB), "
 tsp = pd.read_csv(RES / "ph_timesplit.csv")
 tsp = pd.DataFrame({"Analysis": tsp.analysis, "Outcome": tsp.outcome.map(LAB), "Exposure": tsp.term.map(lambda x: SIG.get(x, x)),
                     "Follow-up period": tsp.period, "Cases": tsp.events, "HR (95% CI)": [ci(*x) for x in tsp[["hr", "lci", "uci"]].to_numpy()]})
-SI.append(("Supplementary Table 18. Proportional-hazards tests for the main models", pht,
+SI.append(("Supplementary Table 7. Proportional-hazards tests for the main models", pht,
            "Scaled Schoenfeld residual test with rank-transformed time, exposure terms of Model 2."))
-SI.append(("Supplementary Table 19. Time-split hazard ratios for terms with a proportional-hazards P <0.05", tsp,
+SI.append(("Supplementary Table 8. Time-split hazard ratios for terms with a proportional-hazards P <0.05", tsp,
            "Events in the first 6 years (follow-up censored at 6 years) and after 6 years (participants event-free at 6 years)."))
 
 mrr = pd.read_csv(RES / "cis_mr_results.csv")
@@ -326,9 +326,9 @@ mrp = mrr[mrr.method.isin(["Wald ratio", "IVW"])].sort_values("p")
 mr_tab = lambda d: pd.DataFrame({"Protein": d.protein, "Outcome (FinnGen R12)": d.outcome, "Method": d.method, "SNPs": d.nsnp,
                                  "OR per SD (95% CI)": [ci(*x) for x in d[["OR", "lci", "uci"]].to_numpy()],
                                  "P": d.p.map(fp), "FDR": d.fdr.map(fp)})
-SI.append(("Supplementary Table 20. Cis-pQTL Mendelian randomization of signature proteins (tests with P <0.05)",
+SI.append(("Supplementary Table 25. Cis-pQTL Mendelian randomization of signature proteins (tests with P <0.05)",
            mr_tab(mrp[mrp.p < 0.05]),
-           "232 protein–outcome tests (58 proteins with instruments matched in FinnGen); all results are in Supplementary Data 27. "
+           "232 protein–outcome tests (58 proteins with instruments matched in FinnGen); all results are in Supplementary Data 33. "
            "Instruments: conditionally independent cis-pQTLs from the UKB-PPP discovery cohort (-log10 P >=7.3, r2 <0.01)."))
 cr = pd.read_csv(RES / "coloc_results.csv")
 cr = cr[cr.p12 == 1e-5].assign(Window="Gene ±1 Mb")
@@ -338,7 +338,7 @@ cc = pd.DataFrame({"Protein": cc.protein, "Outcome": cc.outcome, "Window": cc.Wi
                    "PP.H3": cc["PP.H3"].map("{:.3f}".format), "PP.H4": cc["PP.H4"].map("{:.3f}".format),
                    "Top shared variant": cc.top_shared_rsid if "top_shared_rsid" in cc else ""})
 rmr = pd.read_csv(RES / "cis_mr_region.csv")
-SI.append(("Supplementary Table 21. Colocalisation of MENT, CPB1 and IL6R with biliary and pancreatic diseases", cc,
+SI.append(("Supplementary Table 26. Colocalisation of MENT, CPB1 and IL6R with biliary and pancreatic diseases", cc,
            "coloc.abf with priors p1 = p2 = 1e-4 and p12 = 1e-5 (results with p12 = 5e-6 were similar). PP.H3, distinct causal variants; "
            "PP.H4, shared causal variant. Lead cholelithiasis signals in the regions: CERS2 (MENT), TM4SF4 (CPB1) and ADAR (IL6R)."))
 
@@ -353,18 +353,18 @@ rc1b = pd.DataFrame({"Sample": b.restriction.replace({"All participants (main)":
                                                       "+ stable weight in past year": "+ no dietary change, stable weight"}),
                      "Outcome": b.outcome.map(LAB), "Beverage": b.exposure,
                      "Comparison": b.analysis.str.extract(r"\((.*)\)")[0], "Cases": b.events.map("{:,}".format), "HR (95% CI)": b.est})
-SI.append(("Supplementary Table 22. Beverage intake and biliary and pancreatic diseases after restrictions addressing reverse causation",
+SI.append(("Supplementary Table 12. Beverage intake and biliary and pancreatic diseases after restrictions addressing reverse causation",
            rc1, "Model 2 with SSB and ASB mutually adjusted. Restrictions are cumulative: no major dietary change in the past 5 years "
            "(field 1538), stable weight in the past year (field 2306), no diabetes, BMI <30 kg/m2."))
-SI.append(("Supplementary Table 23. Habitual versus occasional consumption among participants with ≥2 valid recalls", rc1b,
+SI.append(("Supplementary Table 13. Habitual versus occasional consumption among participants with ≥2 valid recalls", rc1b,
            "Habitual: consumed in every valid recall; occasional: in some recalls; reference: in none. SSB and ASB patterns in the same Model 2."))
 rcs = pd.read_csv(RES / "reverse_causation_signature.csv")
 rc2 = pd.DataFrame({"Restriction (cumulative)": rcs.restriction, "Outcome": rcs.outcome.map(LAB), "Signature": rcs.signature.map(SIG),
                     "Cases": rcs.events.map("{:,}".format), "HR per SD (95% CI)": [ci(*x) for x in rcs[["hr", "lci", "uci"]].to_numpy()]})
-SI.append(("Supplementary Table 24. Proteomic signatures and biliary and pancreatic diseases after restrictions addressing reverse causation",
-           rc2, "Model 2 in the independent signature sample; restrictions as in Supplementary Table 22."))
+SI.append(("Supplementary Table 14. Proteomic signatures and biliary and pancreatic diseases after restrictions addressing reverse causation",
+           rc2, "Model 2 in the independent signature sample; restrictions as in Supplementary Table 12."))
 sr = pd.read_csv(RES / "substitution_restricted.csv")
-SI[-3] = (SI[-3][0], SI[-3][1], SI[-3][2] + " Substitution estimates in the restricted sample (no dietary change, stable weight, no diabetes) are in Supplementary Data 33.")
+SI[-3] = (SI[-3][0], SI[-3][1], SI[-3][2] + " Substitution estimates in the restricted sample (no dietary change, stable weight, no diabetes) are in Supplementary Data 27.")
 
 mi = pd.read_csv(RES / "mri_intake.csv")
 fmt_m = lambda r: (f"{r.estimate:.2f}% ({r.lci:.2f}% to {r.uci:.2f}%)" if r.scale == "% difference"
@@ -372,13 +372,13 @@ fmt_m = lambda r: (f"{r.estimate:.2f}% ({r.lci:.2f}% to {r.uci:.2f}%)" if r.scal
 mi_t = pd.DataFrame({"Phenotype": mi.phenotype, "Sample": mi["sample"], "Model": mi.model, "Beverage": mi.exposure,
                      "n": mi.n.map("{:,}".format), "Difference per serving/day (95% CI)": mi.apply(fmt_m, axis=1),
                      "P": mi.p.map(fp)})
-SI.append(("Supplementary Table 25. Sweetened beverage intake and abdominal MRI measures at the imaging visit", mi_t,
+SI.append(("Supplementary Table 23. Sweetened beverage intake and abdominal MRI measures at the imaging visit", mi_t,
            "Linear regression with SSB and ASB mutually adjusted. Model A: Model 2 covariates (including baseline BMI), years from first recall to imaging and imaging centre; Model B: + BMI at the imaging visit; Model C: Model A without BMI. PDFF was log-transformed and is reported as % difference; volumes in litres (pancreas volume in mL)."))
 ms = pd.read_csv(RES / "mri_signature.csv")
 ms_t = pd.DataFrame({"Phenotype": ms.phenotype, "Sample": ms["sample"], "Model": ms.model,
                      "Signature": ms.signature.map(SIG) + np.where(ms.mutual, " (mutually adjusted)", ""),
                      "n": ms.n.map("{:,}".format), "Difference per SD (95% CI)": ms.apply(fmt_m, axis=1), "P": ms.p.map(fp)})
-SI.append(("Supplementary Table 26. Proteomic signatures and abdominal MRI measures at the imaging visit", ms_t,
+SI.append(("Supplementary Table 24. Proteomic signatures and abdominal MRI measures at the imaging visit", ms_t,
            "Linear regression; Model A: signature Model 1 covariates (including baseline BMI), years from baseline to imaging and imaging centre; Model B: + BMI at the imaging visit; Model C: Model A without BMI."))
 
 # long tables: Excel only
@@ -411,13 +411,16 @@ full_sig = sm.assign(Outcome=sm.outcome.map(LAB), Signature=sm.signature.map(SIG
     ["Outcome", "analysis", "model", "Signature", "events", "n", "HR (95% CI)", "p"]].rename(
     columns={"analysis": "Analysis", "model": "Model", "events": "Cases", "n": "N", "p": "P"})
 
-XL_ONLY = [("Supplementary Data 27. Cis-pQTL Mendelian randomization, all estimates", mrr.assign(protein=mrr.protein)),
+XL_ONLY = [("Supplementary Data 33. Cis-pQTL Mendelian randomization, all estimates", mrr.assign(protein=mrr.protein)),
            ("Supplementary Data 28. Protein-wise associations of SSB and ASB with 2,919 plasma proteins", pax),
-           ("Supplementary Data 29. Elastic-net weights of the proteomic signatures", pd.concat(wts)),
-           ("Supplementary Data 30. Individual signature proteins and biliary and pancreatic diseases (Model 1)", pcx),
-           ("Supplementary Data 31. Pathway enrichment (g:Profiler)", enr),
-           ("Supplementary Data 32. All signature–outcome estimates, incl. residual signatures", full_sig),
-           ("Supplementary Data 33. Substitution analyses in the restricted sample", sr)]
+           ("Supplementary Data 30. Elastic-net weights of the proteomic signatures", pd.concat(wts)),
+           ("Supplementary Data 32. Individual signature proteins and biliary and pancreatic diseases (Model 1)", pcx),
+           ("Supplementary Data 29. Pathway enrichment (g:Profiler)", enr),
+           ("Supplementary Data 31. All signature–outcome estimates, incl. residual signatures", full_sig),
+           ("Supplementary Data 27. Substitution analyses in the restricted sample", sr)]
+# supplementary items are numbered in order of first citation in the manuscript
+SI.sort(key=lambda x: int(re.search(r"Supplementary Table (\d+)\.", x[0]).group(1)))
+XL_ONLY.sort(key=lambda x: int(re.search(r"Supplementary Data (\d+)\.", x[0]).group(1)))
 DATA = [(t, dd) for t, dd, _ in SI] + XL_ONLY
 
 # ---------------------------------------------------------------- Word: supplementary information
@@ -480,14 +483,15 @@ for title, dd, note in SI:
             border(c, ("bottom",) if i == len(dd) else ())
     add_text(doc.add_paragraph(), (note + " " if note else "") + "Abbreviations: " + ABBR)
 
-FIGS = [("FigS1_substitution", "Supplementary Figure 1. Substitution analyses. HRs (95% CI) for replacing 1 serving/day of "
+FIGS = [("FigS2_substitution", "Supplementary Figure 2. Substitution analyses. HRs (95% CI) for replacing 1 serving/day of "
          "SSB (a) or ASB (b) with 1 serving/day of another beverage, from Model 2 including all beverages."),
-        ("FigS2_subgroups", "Supplementary Figure 2. Subgroup analyses of beverage intake and gallstone disease (a) and acute "
+        ("FigS1_subgroups", "Supplementary Figure 1. Subgroup analyses of beverage intake and gallstone disease (a) and acute "
          "pancreatitis (b). HR per serving/day (Model 2); P for interaction from likelihood-ratio tests."),
-        ("FigS3_signature_tertiles", "Supplementary Figure 3. Tertiles of the SSB (a) and ASB (b) proteomic signatures and "
+        ("FigS4_signature_tertiles", "Supplementary Figure 4. Tertiles of the SSB (a) and ASB (b) proteomic signatures and "
          "biliary and pancreatic diseases (Model 2), lowest tertile as reference."),
-        ("FigS4_biomarkers", "Supplementary Figure 4. Percentage difference in baseline blood biomarkers per serving/day of SSB "
+        ("FigS3_biomarkers", "Supplementary Figure 3. Percentage difference in baseline blood biomarkers per serving/day of SSB "
          "and ASB (Model 2 covariates and fasting time; mutually adjusted).")]
+FIGS.sort(key=lambda x: int(re.search(r"Supplementary Figure (\d+)\.", x[1]).group(1)))
 for name, legend in FIGS:
     sec = doc.add_section()
     orient(sec, False)

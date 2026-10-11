@@ -352,7 +352,7 @@ def fig6():
 
 
 # ---------------------------------------------------------------- supplementary figures
-def figS1():
+def figS2():
     s = pd.read_csv(RES / "intake_substitution.csv")
     outs = ["Gallstones", "AP", "AP_biliary", "AP_nonbiliary", "CP"]
     fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.0), sharey=True, gridspec_kw={"wspace": 0.1})
@@ -369,10 +369,10 @@ def figS1():
         ax.legend(frameon=False, fontsize=5.8, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=5,
                   handlelength=1.4, columnspacing=1.0)
         tag(ax, t, x=-0.02 if t == "b" else -0.5)
-    save(fig, "FigS1_substitution")
+    save(fig, "FigS2_substitution")
 
 
-def figS2():
+def figS1():
     g = pd.read_csv(RES / "intake_subgroups.csv")
     LEVELS = {"Sex": ["Men", "Women"], "Age": ["<60 years", ">=60 years"], "BMI": ["<25", "25 to <30", ">=30"],
               "Alcohol": ["Non-regular drinker", "Regular drinker"], "Smoking": ["Never", "Ever"], "Diabetes": ["No", "Yes"]}
@@ -400,10 +400,10 @@ def figS2():
         ax.legend(frameon=False, fontsize=6, loc="upper right", bbox_to_anchor=(1.02, 1.0))
         tag(ax, t, x=-0.9)
     fig.text(0.5, 0.0, "$P$ int. = $P$ for interaction (SSB / ASB), likelihood-ratio test", ha="center", fontsize=6)
-    save(fig, "FigS2_subgroups")
+    save(fig, "FigS1_subgroups")
 
 
-def figS3():
+def figS4():
     t = pd.read_csv(RES / "signature_tertiles.csv")
     t = t[t.model == "M2"]
     outs = ["Gallstones", "AP", "AP_biliary", "AP_nonbiliary", "CP"]
@@ -419,10 +419,10 @@ def figS3():
         ax.set_title(f"{s.split('_')[1]} signature tertiles", fontsize=7)
         ax.legend(frameon=False, fontsize=6, loc="lower right")
         tag(ax, tg, x=-0.02 if tg == "b" else -0.7)
-    save(fig, "FigS3_signature_tertiles")
+    save(fig, "FigS4_signature_tertiles")
 
 
-def figS4():
+def figS3():
     b = pd.read_csv(RES / "biomarkers.csv")
     b = b[b.adjustment == "with BMI"]
     marks = b.biomarker.unique().tolist()
@@ -439,7 +439,7 @@ def figS4():
     for s in ("top", "right", "left"):
         ax.spines[s].set_visible(False)
     ax.tick_params(axis="y", length=0)
-    save(fig, "FigS4_biomarkers")
+    save(fig, "FigS3_biomarkers")
 
 
 if __name__ == "__main__":
