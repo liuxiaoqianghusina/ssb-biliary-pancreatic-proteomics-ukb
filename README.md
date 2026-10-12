@@ -2,7 +2,7 @@
 
 Analysis code for the manuscript:
 
-> **Sugar-sweetened beverages and risk of gallstone disease and pancreatitis: a prospective cohort study with proteomic and genetic analyses.** Boming Xu, Xiaobo Liu, Yubin Wang, Yingxuan Huang, Chanchan Lin, Yingyi Li, Yisen Huang, Xiaoqiang Liu. Submitted to *Clinical Nutrition*.
+> **Sugar-sweetened beverages and risk of gallstone disease and pancreatitis: a prospective cohort study with proteomic and genetic analyses.** Submitted to *Clinical Nutrition*.
 
 The study relates intake of sugar-sweetened beverages (SSBs) and artificially sweetened beverages (ASBs), assessed with Oxford WebQ 24-h dietary recalls, to incident gallstone disease, cholecystitis, acute pancreatitis (gallstone-related and non-gallstone) and chronic pancreatitis. It also derives elastic-net proteomic signatures of SSB and ASB intake from 2,919 Olink plasma proteins, tests them in an independent sample, assesses reverse causation, relates intake and signatures to abdominal MRI measures of organ fat, and uses cis-pQTL Mendelian randomization with colocalization (UKB-PPP, FinnGen R12) to examine the signature proteins.
 
