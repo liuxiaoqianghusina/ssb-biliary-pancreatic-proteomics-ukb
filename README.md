@@ -24,7 +24,7 @@ The study relates intake of sugar-sweetened beverages (SSBs) and artificially sw
 | | `S10_cis_mr.py`, `S11_coloc.py`, `S11b_coloc_window.py` | cis-pQTL Mendelian randomization (UKB-PPP → FinnGen R12) and colocalization (coloc.abf) |
 | | `S12_reverse_causation.py`, `S12b_substitution_restricted.py` | Restrictions to stable diet/weight, no diabetes and BMI <30; habitual consumption patterns |
 | | `S14_abdominal_mri.py` | Intake and signatures versus pancreatic and liver PDFF, visceral and subcutaneous fat and pancreas volume at the imaging visit |
-| | `S07_figures.py`, `S08_tables.py`, `S13_graphical_abstract.py` | Figures, tables, supplementary tables and the graphical abstract |
+| | `S07_figures.py`, `S08_tables.py`, `S13_graphical_abstract.py`, `S15_toc_FoodFunction.py` | Figures, tables, supplementary tables and the graphical abstract |
 
 ## Configuration
 

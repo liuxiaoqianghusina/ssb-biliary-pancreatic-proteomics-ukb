@@ -285,7 +285,7 @@ for o in SPECTRUM + SECOND + ALTDEF + CONTROLS:
 s13 = pd.DataFrame(rows)
 SI.append(("Supplementary Table 18. Proteomic signatures and all outcomes across adjustment models (HR per SD)",
            s13[["Outcome", "Cases/N"] + [c for c in s13.columns if c.startswith(("SSB", "ASB"))]],
-           "Model 1: age, sex, ethnicity, Townsend index, education, smoking, alcohol frequency, physical activity, BMI, diabetes, fasting time, centre. Model 2: + TG, HbA1c, CRP, GGT, cystatin C, creatinine. Model 3: + BMI proteomic signature. Residual signatures are shown in Supplementary Data."))
+           "Model 1: age, sex, ethnicity, Townsend index, education, smoking, alcohol frequency, physical activity, BMI, diabetes, fasting time, centre. Model 2: + TG, HbA1c, CRP, GGT, cystatin C, creatinine. Model 3: + BMI proteomic signature. Residual signatures are shown in Supplementary Data 31."))
 tt = pd.read_csv(RES / "signature_tertiles.csv")
 tt = tt[tt.outcome.isin(SPECTRUM)]
 tt = pd.DataFrame({"Outcome": tt.outcome.map(LAB), "Signature": tt.signature.map(SIG), "Model": tt.model.str.replace("M", "Model "),
@@ -424,6 +424,38 @@ XL_ONLY = [("Supplementary Data 33. Cis-pQTL Mendelian randomization, all estima
 SI.sort(key=lambda x: int(re.search(r"Supplementary Table (\d+)\.", x[0]).group(1)))
 XL_ONLY.sort(key=lambda x: int(re.search(r"Supplementary Data (\d+)\.", x[0]).group(1)))
 DATA = [(t, dd) for t, dd, _ in SI] + XL_ONLY
+# ESI_STYLE=rsc (Food & Function): "Table S1", "Fig. S1", "Data S1" (Data 27-33 -> S1-S7) and British spelling
+ESI = os.environ.get("ESI_STYLE") == "rsc"
+BRIT = [("randomization", "randomisation"), ("Randomization", "Randomisation"), ("colocalization", "colocalisation"),
+        ("Colocalization", "Colocalisation"), ("analyzed", "analysed"), ("standardized", "standardised"),
+        ("Standardized", "Standardised"), ("hemoglobin", "haemoglobin"), ("residualized", "residualised"),
+        ("Residualized", "Residualised"), ("hypertriglyceridemia", "hypertriglyceridaemia"), ("modeled", "modelled")]
+
+
+def rsc(s):
+    if not ESI or not isinstance(s, str):
+        return s
+    def rep(m):
+        kind, a, b = m.group(1), int(m.group(2)), m.group(3)
+        if kind.startswith("Data"):
+            a, b = a - 26, (int(b) - 26 if b else None)
+            lab = "Data S"
+        elif kind.startswith("Table"):
+            lab = "Tables S" if kind.endswith("s") else "Table S"
+        else:
+            lab = "Figs. S" if kind.endswith("s") else "Fig. S"
+        return f"{lab}{a}" + (f"–S{b}" if b else "")
+    s = re.sub(r"Supplementary (Tables?|Figures?|Data) (\d+)(?:–(\d+))?", rep, s)
+    for x, y in BRIT:
+        s = s.replace(x, y)
+    return s
+
+
+SI = [(rsc(t), dd, rsc(n)) for t, dd, n in SI]
+XL_ONLY = [(rsc(t), dd) for t, dd in XL_ONLY]
+DATA = [(t, dd) for t, dd, _ in SI] + XL_ONLY
+SI_DOCX = os.environ.get("SI_DOCX", "Supplementary_Information.docx")
+SI_XLSX = os.environ.get("SI_XLSX", "Supplementary_Data.xlsx")
 
 # ---------------------------------------------------------------- Word: supplementary information
 P_RE = re.compile(r"(?<![A-Za-z])P(?![A-Za-z])")
@@ -453,28 +485,28 @@ def border(cell, edges):
 
 
 def orient(sec, land):
-    if land and sec.page_width < sec.page_height:
-        sec.orientation = WD_ORIENT.LANDSCAPE; sec.page_width, sec.page_height = sec.page_height, sec.page_width
-    if not land and sec.page_width > sec.page_height:
-        sec.orientation = WD_ORIENT.PORTRAIT; sec.page_width, sec.page_height = sec.page_height, sec.page_width
+    # A4 (python-docx defaults to US Letter), with the orientation flag set to match the page shape
+    sec.orientation = WD_ORIENT.LANDSCAPE if land else WD_ORIENT.PORTRAIT
+    sec.page_width, sec.page_height = (Cm(29.7), Cm(21)) if land else (Cm(21), Cm(29.7))
     for mg in ("top_margin", "bottom_margin", "left_margin", "right_margin"):
         setattr(sec, mg, Cm(1.6))
 
 
+orient(doc.sections[0], False)
 add_text(doc.add_paragraph(), os.environ.get("SI_HEADING", "Supplementary Information"), bold=True)
 si_title = os.environ.get("SI_TITLE", "Sugar-sweetened and artificially sweetened beverages, plasma "
                           "proteomic signatures and risk of biliary and pancreatic diseases: a prospective cohort study in the UK Biobank")
 if si_title:                                   # Frontiers: supplementary files carry no title/author information
     add_text(doc.add_paragraph(), si_title)
-add_text(doc.add_paragraph(), "Contents: Supplementary Tables 1–26; Supplementary Figures 1–5. Supplementary Data 27–33 "
-                              "(full protein-level results) are provided in Supplementary_Data.xlsx.")
+add_text(doc.add_paragraph(), rsc("Contents: Supplementary Tables 1–26; Supplementary Figures 1–5. Supplementary Data 27–33 "
+                                  f"(full protein-level results) are provided in {SI_XLSX}."))
 first = True
 for title, dd, note in SI:
     land = dd.shape[1] > 5 or dd.astype(str).apply(lambda c: c.str.len().max()).sum() > 95
     sec = doc.add_section()
     orient(sec, land)
     add_text(doc.add_paragraph(), title, bold=True)
-    t = doc.add_table(rows=len(dd) + 1, cols=dd.shape[1])
+    t = doc.add_table(rows=len(dd) + 2, cols=dd.shape[1])   # last row: the table note (kept with the final data rows)
     for j, h in enumerate(dd.columns):
         c = t.cell(0, j); c.text = ""; add_text(c.paragraphs[0], str(h), bold=True); border(c, ("top", "bottom"))
         c.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -485,7 +517,16 @@ for title, dd, note in SI:
             c.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
             c.paragraphs[0].paragraph_format.space_after = Pt(0)
             border(c, ("bottom",) if i == len(dd) else ())
-    add_text(doc.add_paragraph(), (note + " " if note else "") + "Abbreviations: " + ABBR)
+    nc = t.cell(len(dd) + 1, 0).merge(t.cell(len(dd) + 1, dd.shape[1] - 1)); nc.text = ""
+    add_text(nc.paragraphs[0], (note + " " if note else "") + "Abbreviations: " + ABBR)
+    nc.paragraphs[0].paragraph_format.space_before = Pt(3); border(nc, ())
+    # long tables: repeat the header row on every page, keep rows whole, keep the last data rows with the note row
+    hdr = t.rows[0]._tr.get_or_add_trPr(); el = OxmlElement("w:tblHeader"); el.set(qn("w:val"), "true"); hdr.append(el)
+    for k, row in enumerate(t.rows):
+        cs = OxmlElement("w:cantSplit"); cs.set(qn("w:val"), "true"); row._tr.get_or_add_trPr().append(cs)
+        if len(t.rows) - 4 <= k < len(t.rows) - 1:
+            for c in row.cells:
+                c.paragraphs[0].paragraph_format.keep_with_next = True
 
 FIGS = [("FigS2_substitution", "Supplementary Figure 2. Substitution analyses. HRs (95% CI) for replacing 1 serving/day of "
          "SSB (a) or ASB (b) with 1 serving/day of another beverage, from Model 2 including all beverages."),
@@ -507,8 +548,8 @@ for name, legend in FIGS:
     sec = doc.add_section()
     orient(sec, False)
     doc.add_picture(str(FIG / f"{name}.png"), width=Cm(17))
-    add_text(doc.add_paragraph(), legend)
-doc.save(MS / "Supplementary_Information.docx")
+    add_text(doc.add_paragraph(), rsc(legend))
+doc.save(MS / SI_DOCX)
 
 # ---------------------------------------------------------------- Excel: supplementary data
 F10, F10B, LEFT = Font(name="Arial", size=10), Font(name="Arial", size=10, bold=True), Alignment(horizontal="left")
@@ -534,7 +575,8 @@ for i, (title, _) in enumerate(DATA, start=1):
 ws0.column_dimensions["A"].width = 110
 for title, dd in DATA:
     num = re.search(r"(\d+)\.", title).group(1)
-    ws = wb.create_sheet(("Suppl. Table " if title.startswith("Supplementary Table") else "Suppl. Data ") + num)
+    ws = wb.create_sheet(title.split(".")[0] if ESI else
+                         ("Suppl. Table " if title.startswith("Supplementary Table") else "Suppl. Data ") + num)
     ws.cell(row=1, column=1, value=xl(title, bold=True)).font = F10B
     for j, c in enumerate(dd.columns, start=1):
         h = ws.cell(row=3, column=j, value=xl(str(c), bold=True)); h.font, h.alignment = F10B, LEFT
@@ -545,5 +587,5 @@ for title, dd in DATA:
     for j, c in enumerate(dd.columns, start=1):
         w = max([len(str(c))] + [len(str(v)) for v in dd.iloc[:200, j - 1]]) + 2
         ws.column_dimensions[ws.cell(row=3, column=j).column_letter].width = min(60, max(9, w))
-wb.save(MS / "Supplementary_Data.xlsx")
+wb.save(MS / SI_XLSX)
 print(t1.to_string(index=False)); print(t2.to_string(index=False)); print(t3.to_string(index=False))

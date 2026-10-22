@@ -32,21 +32,28 @@ SHORT = {**OUT_LABEL, "AP_biliary": "Gallstone-related AP", "AP_nonbiliary": "No
          "NC_carpal_tunnel": "Upper-limb mononeuropathy"}
 
 
-# FRONTIERS=1 writes Frontiers-style main figures (bold "(A)" panel labels, width <=180 mm) to FIG_DIR
+# FRONTIERS=1 writes Frontiers-style main figures (bold "(A)" panel labels, width <=180 mm) to FIG_DIR;
+# FIG_MAX_MM caps the final width for other journals (Food & Function: 170); UNIT_STYLE=rsc writes "per day"
 FRONTIERS = os.environ.get("FRONTIERS") == "1"
+MAX_MM = 180.0 if FRONTIERS else (float(os.environ["FIG_MAX_MM"]) if os.environ.get("FIG_MAX_MM") else None)
+RSC_UNITS = os.environ.get("UNIT_STYLE") == "rsc"
 OUT = Path(os.environ["FIG_DIR"]) if os.environ.get("FIG_DIR") else FIG
 OUT.mkdir(parents=True, exist_ok=True)
 
 
 def save(fig, name):
-    if FRONTIERS:                              # final (tight) width must not exceed 180 mm
+    if RSC_UNITS:                              # RSC style: "servings per day" rather than "servings/day"
+        for t in fig.findobj(matplotlib.text.Text):
+            if "/day" in t.get_text():
+                t.set_text(t.get_text().replace("per serving/day", "per daily serving").replace("/day", " per day"))
+    if MAX_MM:                                 # final (tight) width must not exceed MAX_MM
         for _ in range(6):
             fig.canvas.draw()
             tw = fig.get_tightbbox(fig.canvas.get_renderer()).width
-            if tw <= 174 / 25.4:               # savefig adds 0.1-inch padding on each side
+            if tw <= (MAX_MM - 6) / 25.4:      # savefig adds 0.1-inch padding on each side
                 break
             w, h = fig.get_size_inches()
-            k = (173 / 25.4) / tw
+            k = ((MAX_MM - 7) / 25.4) / tw
             fig.set_size_inches(w * k, h * k)
     for ext in ["svg", "pdf", "png", "tiff"]:
         fig.savefig(OUT / f"{name}.{ext}", dpi=600, bbox_inches="tight")
