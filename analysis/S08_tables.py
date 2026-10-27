@@ -425,7 +425,8 @@ SI.sort(key=lambda x: int(re.search(r"Supplementary Table (\d+)\.", x[0]).group(
 XL_ONLY.sort(key=lambda x: int(re.search(r"Supplementary Data (\d+)\.", x[0]).group(1)))
 DATA = [(t, dd) for t, dd, _ in SI] + XL_ONLY
 # ESI_STYLE=rsc (Food & Function): "Table S1", "Fig. S1", "Data S1" (Data 27-33 -> S1-S7) and British spelling
-ESI = os.environ.get("ESI_STYLE") == "rsc"
+ESI_MODE = os.environ.get("ESI_STYLE", "")          # "rsc" (Food & Function) or "wiley" (Food Science & Nutrition)
+ESI = ESI_MODE in ("rsc", "wiley")
 BRIT = [("randomization", "randomisation"), ("Randomization", "Randomisation"), ("colocalization", "colocalisation"),
         ("Colocalization", "Colocalisation"), ("analyzed", "analysed"), ("standardized", "standardised"),
         ("Standardized", "Standardised"), ("hemoglobin", "haemoglobin"), ("residualized", "residualised"),
@@ -443,11 +444,13 @@ def rsc(s):
         elif kind.startswith("Table"):
             lab = "Tables S" if kind.endswith("s") else "Table S"
         else:
-            lab = "Figs. S" if kind.endswith("s") else "Fig. S"
+            lab = ("Figs. S" if kind.endswith("s") else "Fig. S") if ESI_MODE == "rsc" else \
+                  ("Figures S" if kind.endswith("s") else "Figure S")
         return f"{lab}{a}" + (f"–S{b}" if b else "")
     s = re.sub(r"Supplementary (Tables?|Figures?|Data) (\d+)(?:–(\d+))?", rep, s)
-    for x, y in BRIT:
-        s = s.replace(x, y)
+    if ESI_MODE == "rsc":
+        for x, y in BRIT:
+            s = s.replace(x, y)
     return s
 
 

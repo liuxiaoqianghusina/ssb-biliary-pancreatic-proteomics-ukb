@@ -124,6 +124,35 @@ box(1.5, 0.8, 129.8, 6.4, "#eef6ec", ec=GREEN, lw=1.5)
 ax.text(66.4, 4.0, "Replace sugar-sweetened beverages with water, tea or coffee", ha="center", va="center", fontsize=16,
         fontweight="bold", color=GREEN)
 
+# GA_PLAIN=1 (Food Science & Nutrition): no abbreviations or jargon in the graphical abstract; written to GA_DIR
+import os
+from pathlib import Path
+if os.environ.get("GA_PLAIN") == "1":
+    PLAIN = {"24-h dietary recalls\n11.8-year follow-up": "24-hour diet records\n11.8-year follow-up",
+             "Plasma proteome (2,919 proteins)\nAbdominal MRI organ fat\nMendelian randomization":
+                 "2,919 blood proteins\nAbdominal imaging\nGenetic analyses",
+             "Sugar-sweetened beverages (SSB)": "Sugar-sweetened beverages",
+             "↑ Pancreatic, liver & visceral fat (MRI)": "↑ Fat in pancreas, liver and belly",
+             "Habitual intake: acute pancreatitis HR 1.86": "Regular drinkers: 86% higher acute pancreatitis risk",
+             "Artificially sweetened beverages (ASB)": "Artificially sweetened beverages",
+             "Intake associations weaken after": "Links weaken after excluding people",
+             "restriction → reverse causation": "who had changed diet or weight",
+             "Organ fat on MRI largely explained by BMI": "Organ fat largely explained by body weight",
+             "Proteomic signature still marks pancreatitis risk": "Blood protein pattern still marks pancreatitis risk",
+             "Proteomic signatures (independent sample)": "Blood protein patterns (independent sample)",
+             "SSB signature": "Sugary-drink pattern", "ASB signature": "Diet-drink pattern",
+             "Signature proteins: markers, not causal (MR, colocalization)": "Proteins are risk markers, not causes (genetic analyses)",
+             "SSB": "Sugar", "ASB": "Diet"}
+    for t in ax.texts:
+        if t.get_text() in PLAIN:
+            new = PLAIN[t.get_text()]
+            if t.get_text() in ("SSB", "ASB"):
+                t.set_fontsize(10.5)
+            t.set_text(new)
+    left = [t.get_text() for t in ax.texts if any(x in t.get_text() for x in ("SSB", "ASB", "MRI", "BMI", "HR ", "MR,"))]
+    assert not left, left
+if os.environ.get("GA_DIR"):
+    FIG = Path(os.environ["GA_DIR"]); FIG.mkdir(parents=True, exist_ok=True)
 for ext, kw in [("tiff", {"dpi": 300, "pil_kwargs": {"compression": "tiff_lzw"}}), ("pdf", {}), ("png", {"dpi": 300}),
                 ("svg", {})]:
     fig.savefig(FIG / f"Graphical_abstract.{ext}", **kw)
